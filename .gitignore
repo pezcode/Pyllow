@@ -1,12 +1,11 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# Visual Studio temp files
 
-# Compiled Dynamic libraries
-*.so
+/ipch
+*.opensdf
+*.sdf
+*.suo
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
+# Visual Studio output directories
+
+/Debug
+/Release
