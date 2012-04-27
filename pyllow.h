@@ -7,4 +7,5 @@ public:
 	static const wchar_t VERSION[];
 
 	Pyllow();
+	~Pyllow();
 };

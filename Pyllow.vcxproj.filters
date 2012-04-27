@@ -27,12 +27,24 @@
     <ClCompile Include="pyllow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="py_error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="py_setup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pyllow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="olly_menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="py_error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="py_setup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
