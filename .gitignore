@@ -9,3 +9,9 @@
 
 /Debug
 /Release
+
+/ollyapi/Debug
+/ollyapi/Release
+
+/Pyllow/Debug
+/Pyllow/Release

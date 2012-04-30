@@ -1,83 +1,15 @@
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                        OLLYDBG 2 PLUGIN HEADER FILE                        //
-//                                                                            //
-//                                Version 2.01                                //
-//                                                                            //
-//               Written by Oleh Yuschuk (ollydbg@t-online.de)                //
-//                                                                            //
-//                          Internet: www.ollydbg.de                          //
-//                                                                            //
-// This code is distributed "as is", without warranty of any kind, expressed  //
-// or implied, including, but not limited to warranty of fitness for any      //
-// particular purpose. In no event will Oleh Yuschuk be liable to you for any //
-// special, incidental, indirect, consequential or any other damages caused   //
-// by the use, misuse, or the inability to use of this code, including any    //
-// lost profits or lost savings, even if Oleh Yuschuk has been advised of the //
-// possibility of such damages.                                               //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-//
-// Changelog: (edits by atom0s)
-//
-//  -> Fixed: Redefinition inclusion; added pragma and ifdef guard.
-//  -> Fixed: DllImport bug; type was defined before the import.
-//  -> Fixed: Exports redefined to proper names without underscore.
-//
-////////////////////////////////////////////////////////////////////////////////
-
-#pragma once
-
-#ifndef __OLLYDBG2_PLUGIN_INCLUDED__
-#define __OLLYDBG2_PLUGIN_INCLUDED__
+ %module ollyapi
+ %{
+ /* Includes the header in the wrapper code */
+ #include "../ollydbg/ollydbg.h"
+ %}
+ 
+%include <windows.i>
+%include <wchar.i>
+%include <cstring.i>
+%include <cwstring.i>
 
 #define PLUGIN_VERSION 201             // Version of plugin interface
-
-#include <windows.h>
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////// IMPORTANT INFORMATION /////////////////////////////
-
-// 1. Plugins are UNICODE libraries!
-// 2. Export all callback functions by name, NOT by ordinal!
-// 3. Force byte alignment of OllyDbg structures!
-// 4. Set default char type to unsigned!
-// 5. Most API functions are NOT thread-safe!
-// 6. Read documentation!
-
-#ifndef _UNICODE
-#error This version must be compiled with UNICODE on
-#endif
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////// PREFERRED SETTINGS AND FIXES FOR BORLAND COMPILERS //////////////
-
-#ifdef __BORLANDC__
-#pragma option -a1                   // Byte alignment
-#pragma option -K                    // Force unsigned characters!
-// Redefinition of MAKELONG removes nasty warning under Borland Builder 4.0:
-// boolean OR in one row with arithmetical shift.
-#undef  MAKELONG
-#define MAKELONG(lo,hi) ((LONG)(((WORD)(lo))|(((DWORD)((WORD)(hi)))<<16)))
-#endif
-
-
-////////////////////////////////////////////////////////////////////////////////
-///////////// PREFERRED SETTINGS AND FIXES FOR MICROSOFT COMPILERS /////////////
-
-// If you like Microsoft compiler, this will force byte alignment and verify
-// that character is set to unsigned.
-#ifdef _MSC_VER
-#pragma pack(1)                      // Force byte alignment of structures
-#ifndef _CHAR_UNSIGNED               // Verify that character is unsigned
-#error Please set default char type to unsigned (option /J)
-#endif
-#endif
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////// GLOBAL DEFINITIONS //////////////////////////////
 
 #ifndef _export
 #define _export      __declspec(dllexport)
@@ -91,8 +23,8 @@
 #define MAKELP(lo,hi)  ((LPARAM)MAKELONG(lo,hi))
 
 #define LOINT(l)       ((signed short)((WORD)(l)))
-#define HIINT(l)       ((signed short)(((DWORD)(l)>>16) & 0xFFFF))
 
+#define HIINT(l)       ((signed short)(((DWORD)(l)>>16) & 0xFFFF))
 #ifndef MAXPATH
 #define MAXPATH      MAX_PATH
 #endif
@@ -311,6 +243,8 @@ varapi (int)     HexdumpA(char* s, uchar* code, int n);
 varapi (int)     HexdumpW(wchar_t* s, uchar* code, int n);
 varapi (int)     Bitcount(ulong u);
 
+// these are missing in ollydbg.exe?
+/*
 varapi (char*)  SetcaseA(char* s);
 varapi (wchar_t*) SetcaseW(wchar_t* s);
 varapi (int)     StrcopycaseA(char* dest, int n, const char* src);
@@ -325,7 +259,7 @@ varapi (ulong)   CRCcalc(uchar* datacopy, ulong datasize);
 varapi (int)     Getcpuidfeatures(void);
 varapi (void)    Maskfpu(void);
 varapi (void)    Clearfpu(void);
-
+*/
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////// DATA COMPRESSION AND DECOMPRESSION //////////////////////
@@ -2939,7 +2873,7 @@ typedef struct t_emu                   // Parameters passed to emulation routine
 } t_emu;
 
 typedef void TRACEFUNC(ulong*, ulong*, t_predict*, t_disasm*);
-typedef void cdecl EMUFUNC(t_emu*, t_reg*);
+typedef void __cdecl EMUFUNC(t_emu*, t_reg*);
 
 typedef struct t_bincmd                // Description of 80x86 command
 {
@@ -4352,29 +4286,6 @@ oddata (t_sorted) _procdata;            // Descriptions of analyzed procedures
 oddata (t_table) _source;               // List of source files
 oddata (t_table) _srccode;              // Source code
 
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// PLUGIN EXPORTS ////////////////////////////////
-
-pentry (int)     ODBG2_Pluginquery(int ollydbgversion,
-                                   wchar_t pluginname[SHORTNAME],
-                                   wchar_t pluginversion[SHORTNAME]);
-pentry (void)    ODBG2_Pluginanalyse(t_module* pmod);
-#ifdef DEBUG_EVENT                     // Requires <winnt.h>
-pentry (void)    ODBG2_Pluginmainloop(DEBUG_EVENT* debugevent);
-#endif
-pentry (void)    ODBG2_Pluginexception(t_reg* preg);
-pentry (int)     ODBG2_Plugindump(t_dump* pd, wchar_t* s, uchar* mask, int n,
-                                  int* select, ulong addr, int column);
-pentry (t_menu*) ODBG2_Pluginmenu(wchar_t* type);
-pentry (void)    ODBG2_Pluginsaveudd(t_uddsave* psave, t_module* pmod,
-                                     int ismainmodule);
-pentry (void)    ODBG2_Pluginuddrecord(t_module* pmod, int ismainmodule,
-                                       ulong tag, ulong size, void* data);
-pentry (void)    ODBG2_Pluginreset(void);
-pentry (int)     ODBG2_Pluginclose(void);
-pentry (void)    ODBG2_Plugindestroy(void);
-
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// PLUGIN HEADER FIXES ///////////////////////////////
 #ifdef __cplusplus
@@ -4447,5 +4358,3 @@ pentry (void)    ODBG2_Plugindestroy(void);
 #define win 			    _win
 #define zwcontinue 			_zwcontinue
 #endif
-
-#endif // __OLLYDBG2_PLUGIN_INCLUDED__

@@ -5,7 +5,7 @@
 
 #include <windows.h>
 #include "pyllow.h"
-#include "ollydbg.h"
+#include <ollydbg.h>
 #include "olly_menu.h"
 
 extern HMODULE g_Instance; // in dllmain.cpp
