@@ -48,4 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="init.py">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

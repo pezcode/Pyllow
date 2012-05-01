@@ -1,9 +1,11 @@
 #include "pyllow.h"
 
-#include <windows.h>
 #include <boost/python.hpp>
 #include "py_setup.h"
 #include "py_error.h"
+
+#include <windows.h>
+#include <ollydbg.h>
 
 namespace py = boost::python;
 
@@ -16,43 +18,23 @@ Pyllow::Pyllow()
 
 	PySetup::initialize();
 
-	// Needed by some modules
-	std::vector<std::wstring> argv(1); // one empty string (argv[0])
-	PySetup::set_argv(argv);
-
 	py::object main_module = py::import("__main__");
 	py::object main_namespace = main_module.attr("__dict__");
 
 	try
 	{
-		//py::exec("from tkinter import messagebox", main_namespace);
-		//py::exec("messagebox.showinfo('tkMessageBox', 'Ohai there')", main_namespace);
-
 		py::exec("import sys", main_namespace, main_namespace);
 		py::exec("sys.path.append('C:/Program Files (x86)/RE/Olly 2/Plugins/Pyllow')", main_namespace, main_namespace);
-
-		argv[0] = L"C:/Program Files (x86)/RE/Olly 2/Plugins/Pyllow/init.py";
-		PySetup::set_argv(argv);
-
-		// Add Olly-Plugin-Dir/Pyllow to Python path
-		// in Pyllow path: Olly functions (SWIG?)
-		//                 Pyllow module (higher level stuff)
-		//                 user-supplied modules (addition plugins.py? or let users add to init.py)
-		// load init.py [explicit path] -> Bootstrap
-
-		//py::exec("import sys", main_namespace, main_namespace);
-		//py::exec("sys.path.append('C:/Program Files (x86)/RE/Olly 2/Plugins/Pyllow')", main_namespace, main_namespace);
-
-		//py::exec_file("C:/Program Files (x86)/RE/Olly 2/Plugins/Pyllow/init.py", main_namespace, main_namespace);
-
 		py::exec("import init", main_namespace, main_namespace);
 
-		/*
-		py::exec("import mod_test", main_namespace, main_namespace);
-		py::exec("x = mod_test.test()", main_namespace, main_namespace);
-		py::exec("x.set('oh')", main_namespace, main_namespace);
-		py::exec("s = x.get()", main_namespace, main_namespace);
-		*/
+		// how to load unicode path? py::str is char only
+		// worse: crashes in ntdll
+		//std::wstring init_script = std::wstring(_plugindir) + L"/Pyllow/init.py";
+		//std::string init_script = std::string("C:/Program Files (x86)/RE/Olly 2/Plugins") + "/Pyllow/init.py";
+		//py::exec_file(py::str(init_script), main_namespace, main_namespace);
+
+		// doesn't find execfile
+		//py::exec("execfile('C:/Program Files (x86)/RE/Olly 2/Plugins/Pyllow/init.py')", main_namespace, main_namespace);
 	}
 	catch(const py::error_already_set& e)
 	{

@@ -95,6 +95,9 @@
     <ClInclude Include="py_error.h" />
     <ClInclude Include="py_setup.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="init.py" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
